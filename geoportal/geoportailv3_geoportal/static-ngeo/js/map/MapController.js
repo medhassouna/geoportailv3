@@ -21,6 +21,13 @@ import offlineUtils from 'ngeo/offline/utils.js';
  * @ngInject
  */
 const exports = function(appStateManager, ngeoDebounce) {
+  this.appStateManager = appStateManager;
+  this.ngeoDebounce = ngeoDebounce;
+};
+
+exports.prototype.$onInit = function() {
+  var appStateManager = this.appStateManager;
+  var ngeoDebounce = this.ngeoDebounce;
   var lurefToWebMercatorFn = getTransform('EPSG:2169', 'EPSG:3857');
 
   /** @type {ol.Map} */
@@ -93,7 +100,6 @@ const exports = function(appStateManager, ngeoDebounce) {
       prefix => document.addEventListener(prefix + 'fullscreenchange', check, false)
   );
 };
-
 
 /**
  * @const

@@ -308,77 +308,7 @@ const exports = function($scope, gettextCatalog, poiSearchServiceUrl,
    * @private
    */
   this.modyfyFeaturesCollection_ = new Collection();
-
-  /**
-   * Due to https://github.com/openlayers/openlayers/issues/7483
-   * We cannot use pointermove condition.
-   * @type {ol.interaction.Select}
-   * @private
-   */
-  this.selectInteraction_ = new Select({
-    features: this.modyfyFeaturesCollection_,
-    condition: click,
-    filter: function(feature, layer) {
-      return this.appRouting.stepFeatures.getArray().indexOf(feature) != -1;
-    }.bind(this)
-  });
-
-  this.map.addInteraction(this.selectInteraction_);
-  this.selectInteraction_.setActive(false);
-  /**
-   * We cannot use pointermove condition.
-   * @type {ol.interaction.Select}
-   * @private
-   */
-  this.selectInteractionPM_ = new Select({
-    condition: pointerMove,
-    filter: function(feature, layer) {
-      return this.appRouting.stepFeatures.getArray().indexOf(feature) != -1;
-    }.bind(this)
-  });
-
-  this.map.addInteraction(this.selectInteractionPM_);
-
-  this.selectInteractionPM_.setActive(false);
-  listen(this.selectInteractionPM_, 'select',
-    this.showHideTooltip_, this);
-
-  /**
-   * @type {ol.interaction.Modify}
-   * @private
-   */
-  this.modifyInteraction_ = new Modify({
-    features: this.modyfyFeaturesCollection_
-  });
-  this.map.addInteraction(this.modifyInteraction_);
-  this.modifyInteraction_.setActive(true);
-
-  listen(this.modifyInteraction_,
-    'modifyend', this.modifyEndStepFeature_, this);
-  /**
-   * @type {ol.source.Vector}
-   * @private
-   */
   this.source_ = ngeoFeatureOverlayMgr.getLayer().getSource();
-
-  listen(this.appRouting.routeFeatures, 'add',
-    this.showRoute_, this);
-  listen(this.appRouting.routeFeatures, 'remove',
-    this.removeRoute_, this);
-
-  /**
-   * @type {ol.Geolocation}
-   * @private
-   */
-  this.geolocation_ = new Geolocation({
-    projection: this.map.getView().getProjection(),
-    trackingOptions: /** @type {GeolocationPositionOptions} */ ({
-      enableHighAccuracy: true,
-      maximumAge: 60000,
-      timeout: 7000
-    })
-  });
-  this.initRoutingService_();
 };
 
 /**
@@ -959,6 +889,78 @@ exports.prototype.askToConnect = function() {
       );
   this.notify_(msg, appNotifyNotificationType.INFO);
   this['useropen'] = true;
+};
+
+exports.prototype.$onInit = function() {
+  /**
+   * Due to https://github.com/openlayers/openlayers/issues/7483
+   * We cannot use pointermove condition.
+   * @type {ol.interaction.Select}
+   * @private
+   */
+   this.selectInteraction_ = new Select({
+    features: this.modyfyFeaturesCollection_,
+    condition: click,
+    filter: function(feature, layer) {
+      return this.appRouting.stepFeatures.getArray().indexOf(feature) != -1;
+    }.bind(this)
+  });
+
+  this.map.addInteraction(this.selectInteraction_);
+  this.selectInteraction_.setActive(false);
+  /**
+   * We cannot use pointermove condition.
+   * @type {ol.interaction.Select}
+   * @private
+   */
+  this.selectInteractionPM_ = new Select({
+    condition: pointerMove,
+    filter: function(feature, layer) {
+      return this.appRouting.stepFeatures.getArray().indexOf(feature) != -1;
+    }.bind(this)
+  });
+
+  this.map.addInteraction(this.selectInteractionPM_);
+
+  this.selectInteractionPM_.setActive(false);
+  listen(this.selectInteractionPM_, 'select',
+    this.showHideTooltip_, this);
+
+  /**
+   * @type {ol.interaction.Modify}
+   * @private
+   */
+  this.modifyInteraction_ = new Modify({
+    features: this.modyfyFeaturesCollection_
+  });
+  this.map.addInteraction(this.modifyInteraction_);
+  this.modifyInteraction_.setActive(true);
+
+  listen(this.modifyInteraction_,
+    'modifyend', this.modifyEndStepFeature_, this);
+  /**
+   * @type {ol.source.Vector}
+   * @private
+   */
+
+  listen(this.appRouting.routeFeatures, 'add',
+    this.showRoute_, this);
+  listen(this.appRouting.routeFeatures, 'remove',
+    this.removeRoute_, this);
+
+  /**
+   * @type {ol.Geolocation}
+   * @private
+   */
+  this.geolocation_ = new Geolocation({
+    projection: this.map.getView().getProjection(),
+    trackingOptions: /** @type {GeolocationPositionOptions} */ ({
+      enableHighAccuracy: true,
+      maximumAge: 60000,
+      timeout: 7000
+    })
+  });
+  this.initRoutingService_();
 };
 
 appModule.controller('AppRoutingController', exports);

@@ -206,7 +206,9 @@ const exports = function($scope,
    * @private
    */
   this.appMymaps_ = appMymaps;
+};
 
+exports.prototype.$onInit = function () {
   /**
    * @type {ol.FeatureStyleFunction}
    * @private
@@ -319,7 +321,7 @@ const exports = function($scope,
 
   // Watch the "active" property, and disable the draw interactions
   // when "active" gets set to false.
-  $scope.$watch(function() {
+  this.scope_.$watch(function() {
     return this.active;
   }.bind(this), function(newVal) {
     if (newVal === false) {
@@ -348,7 +350,7 @@ const exports = function($scope,
   }.bind(this));
 
   var selectInteraction = new olInteractionSelect({
-    features: appSelectedFeatures,
+    features: this.selectedFeatures_,
     hitTolerance: 20,
     filter: function(feature, layer) {
       return this.drawnFeatures_.getArray().indexOf(feature) != -1;
@@ -359,9 +361,9 @@ const exports = function($scope,
 
   this.drawnFeatures_.selectInteraction = selectInteraction;
   this.drawnFeatures_.selectInteraction.setActive(false);
-  appFeaturePopup.init(this.map);
+  this.featurePopup_.init(this.map);
 
-  listen(appSelectedFeatures, olCollectionEventType.ADD,
+  listen(this.selectedFeatures_, olCollectionEventType.ADD,
       /**
        * @param {ol.Collection.Event} evt The event.
        */
@@ -385,7 +387,7 @@ const exports = function($scope,
         this.scope_.$applyAsync();
       }).bind(this));
 
-  listen(appSelectedFeatures, olCollectionEventType.REMOVE,
+  listen(this.selectedFeatures_, olCollectionEventType.REMOVE,
       /**
        * @param {ol.Collection.Event} evt The event.
        */
@@ -404,7 +406,7 @@ const exports = function($scope,
       }), this);
 
   this.drawnFeatures_.modifyInteraction = new olInteractionModify({
-    features: appSelectedFeatures,
+    features: this.selectedFeatures_,
     pixelTolerance: 20,
     deleteCondition: function(event) {
       return noModifierKeys(event) && singleClick(event);
@@ -422,7 +424,7 @@ const exports = function($scope,
 
   this.drawnFeatures_.modifyCircleInteraction =
       new appInteractionModifyCircle({
-        features: appSelectedFeatures
+        features: this.selectedFeatures_
       });
   /**
    * @type {app.interaction.ModifyCircle}
@@ -439,7 +441,7 @@ const exports = function($scope,
       'modifyend', this.onFeatureModifyEnd_, this);
 
   this.drawnFeatures_.translateInteraction = new ngeoInteractionTranslate({
-    features: appSelectedFeatures
+    features: this.selectedFeatures_
   });
   this.drawnFeatures_.translateInteraction.setActive(false);
   this.map.addInteraction(this.drawnFeatures_.translateInteraction);

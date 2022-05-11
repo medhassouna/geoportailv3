@@ -178,12 +178,12 @@ const exports = function($scope, $compile, $sce,
    */
   this.gpxFormat_ = new olFormatGPX();
 
-  /**
-   * @type {Array.<ol.Feature>}
-   * @export
-   */
-  this.featuresList = appDrawnFeatures.getArray();
-  this.map.addLayer(appDrawnFeatures.getLayer());
+  // /**
+  //  * @type {Array.<ol.Feature>}
+  //  * @export
+  //  */
+  // this.featuresList = appDrawnFeatures.getArray();
+  // this.map.addLayer(appDrawnFeatures.getLayer());
 
   /**
    * @type {app.draw.DrawnFeatures}
@@ -1695,6 +1695,15 @@ exports.prototype.afterReorder = function(feature, array) {
  */
 exports.prototype.setDragHandler = function() {
   $('.modal-dialog').draggable('option', 'handle', 'h4');
+};
+
+exports.prototype.$onInit = function() {
+  /**
+   * @type {Array.<ol.Feature>}
+   * @export
+   */
+   this.featuresList = this.drawnFeatures_.getArray();
+   this.map.addLayer(this.drawnFeatures_.getLayer());
 };
 
 appModule.controller('AppMymapsController', exports);

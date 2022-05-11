@@ -78,6 +78,15 @@ const exports = function($scope, $q, $http, $compile, gettext,
    */
   this.elevationServiceUrl_ = elevationServiceUrl;
 
+  this.scope_ = $scope;
+  this.q_ = $q;
+  this.compile_ = $compile;
+  this.filter_ = $filter;
+  this.gettext_ = gettext;
+  this.gettextCatalog_ = gettextCatalog;
+};
+
+exports.prototype.$onInit = function() {
   /**
    * @type {ol.Map}
    * @private
@@ -206,14 +215,14 @@ const exports = function($scope, $q, $http, $compile, gettext,
   layer.setZIndex(1000);
   this.map_.addLayer(layer)
 
-  var helpMsg = gettext('Click to start drawing profile');
-  var contMsg = gettext('Click to continue drawing the line<br>' +
+  var helpMsg = this.gettext_('Click to start drawing profile');
+  var contMsg = this.gettext_('Click to continue drawing the line<br>' +
       'Double-click or click last point to finish');
   var measureProfile = new ngeoInteractionMeasureLength(
-    $filter('ngeoUnitPrefix'),
-    gettextCatalog, {
-      startMsg: $compile('<div translate>' + helpMsg + '</div>')($scope)[0],
-      continueMsg: $compile('<div translate>' + contMsg + '</div>')($scope)[0],
+    this.filter_('ngeoUnitPrefix'),
+    this.gettextCatalog_, {
+      startMsg: this.compile_('<div translate>' + helpMsg + '</div>')(this.scope_)[0],
+      continueMsg: this.compile_('<div translate>' + contMsg + '</div>')(this.scope_)[0],
       sketchStyle: sketchStyle,
       style: style
     });
@@ -226,12 +235,12 @@ const exports = function($scope, $q, $http, $compile, gettext,
   ngeoMiscDecorate.interaction(measureProfile);
   this.map_.addInteraction(measureProfile);
 
-  helpMsg = gettext('Click to start drawing length');
+  helpMsg = this.gettext_('Click to start drawing length');
   var measureLength = new ngeoInteractionMeasureLength(
-    $filter('ngeoUnitPrefix'),
-    gettextCatalog, {
-      startMsg: $compile('<div translate>' + helpMsg + '</div>')($scope)[0],
-      continueMsg: $compile('<div translate>' + contMsg + '</div>')($scope)[0],
+    this.filter_('ngeoUnitPrefix'),
+    this.gettextCatalog_, {
+      startMsg: this.compile_('<div translate>' + helpMsg + '</div>')(this.scope_)[0],
+      continueMsg: this.compile_('<div translate>' + contMsg + '</div>')(this.scope_)[0],
       sketchStyle: sketchStyle,
       style: style,
       layer: layer
@@ -251,8 +260,8 @@ const exports = function($scope, $q, $http, $compile, gettext,
   ngeoMiscDecorate.interaction(measureLength);
   this.map_.addInteraction(measureLength);
 
-  helpMsg = gettext('Click to start drawing area');
-  contMsg = gettext('Click to continue drawing the polygon<br>' +
+  helpMsg = this.gettext_('Click to start drawing area');
+  contMsg = this.gettext_('Click to continue drawing the polygon<br>' +
       'Double-click or click last point to finish');
 
   /**
@@ -266,10 +275,10 @@ const exports = function($scope, $q, $http, $compile, gettext,
   this['persistedFeature'] = undefined
 
   var measureArea = new ngeoInteractionMeasureArea(
-    $filter('ngeoUnitPrefix'),
-    gettextCatalog, {
-      startMsg: $compile('<div translate>' + helpMsg + '</div>')($scope)[0],
-      continueMsg: $compile('<div translate>' + contMsg + '</div>')($scope)[0],
+    this.filter_('ngeoUnitPrefix'),
+    this.gettextCatalog_, {
+      startMsg: this.compile_('<div translate>' + helpMsg + '</div>')(this.scope_)[0],
+      continueMsg: this.compile_('<div translate>' + contMsg + '</div>')(this.scope_)[0],
       sketchStyle: sketchStyle,
       style: style,
       layer: layer
@@ -289,14 +298,14 @@ const exports = function($scope, $q, $http, $compile, gettext,
   ngeoMiscDecorate.interaction(measureArea);
   this.map_.addInteraction(measureArea);
 
-  helpMsg = gettext('Click to start drawing azimut');
-  contMsg = gettext('Click to finish');
+  helpMsg = this.gettext_('Click to start drawing azimut');
+  contMsg = this.gettext_('Click to finish');
   /** @type {ngeo.interaction.MeasureAzimut} */
   var measureAzimut = new ngeoInteractionMeasureAzimut(
-    $filter('ngeoUnitPrefix'), $filter('ngeoNumber'),
+    this.filter_('ngeoUnitPrefix'), this.filter_('ngeoNumber'),
     {
-      startMsg: $compile('<div translate>' + helpMsg + '</div>')($scope)[0],
-      continueMsg: $compile('<div translate>' + contMsg + '</div>')($scope)[0],
+      startMsg: this.compile_('<div translate>' + helpMsg + '</div>')(this.scope_)[0],
+      continueMsg: this.compile_('<div translate>' + contMsg + '</div>')(this.scope_)[0],
       sketchStyle: sketchStyle,
       style: style,
       layer: layer
@@ -324,7 +333,7 @@ const exports = function($scope, $q, $http, $compile, gettext,
             /** @type {ol.geom.LineString} */
             (geometryCollection.getGeometries()[0]);
         var radiusCoordinates = radius.getCoordinates();
-        $q.all([this.getElevation_(radiusCoordinates[0]),
+        this.q_.all([this.getElevation_(radiusCoordinates[0]),
           this.getElevation_(radiusCoordinates[1])]
         ).then(function(data) {
           if (data[0].data['dhm'] >= 0 && data[1].data['dhm'] >= 0) {
@@ -370,13 +379,13 @@ const exports = function($scope, $q, $http, $compile, gettext,
       function(evt) {
         if (!measureProfile.getActive()) {
           this['profileData'] = undefined;
-          $scope.$applyAsync();
+          this.scope_.$applyAsync();
         }
       }, this);
 
   // Watch the "active" property, and disable the measure interactions
   // when "active" gets set to false.
-  $scope.$watch(function() {
+  this.scope_.$watch(function() {
     return this['active'];
   }.bind(this), function(newVal) {
     if (newVal === false) {

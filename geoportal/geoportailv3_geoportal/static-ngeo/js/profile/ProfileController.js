@@ -122,6 +122,14 @@ const exports = function($scope, ngeoFeatureOverlayMgr, echocsvUrl,
         })
       }));
 
+};
+
+exports.prototype.$onInit = function() {
+  /**
+   * @type {ol.Map}
+   * @private
+   */
+  this.map_ = this['map'];
   /**
    * @type {ol.geom.LineString}
    * @private
@@ -161,7 +169,7 @@ const exports = function($scope, ngeoFeatureOverlayMgr, echocsvUrl,
    * @type {ol.EventsKey}
    * @private
    */
-  this.event_ = listen(this['map'], 'pointermove',
+  this.event_ = listen(this.map_ , 'pointermove',
       /**
        * @param {ol.MapBrowserPointerEvent} evt Map browser event.
        */
@@ -169,7 +177,7 @@ const exports = function($scope, ngeoFeatureOverlayMgr, echocsvUrl,
         if (evt.dragging || this.line_ === null) {
           return;
         }
-        var coordinate = this['map'].getEventCoordinate(evt.originalEvent);
+        var coordinate = this.map_ .getEventCoordinate(evt.originalEvent);
         this.snapToGeometry_(coordinate, this.line_);
       }, this);
 
@@ -186,7 +194,7 @@ const exports = function($scope, ngeoFeatureOverlayMgr, echocsvUrl,
       this['point'] = point;
       this.featureOverlay_.clear();
       var curPoint = new olGeomPoint([point['x'], point['y']]);
-      curPoint.transform('EPSG:2169', this['map'].getView().getProjection());
+      curPoint.transform('EPSG:2169', this.map_ .getView().getProjection());
       var positionFeature = new olFeature({
         geometry: curPoint
       });
@@ -231,7 +239,7 @@ const exports = function($scope, ngeoFeatureOverlayMgr, echocsvUrl,
 
   this['point'] = null;
 
-  this.unwatchProfileData = $scope.$watch(function() {
+  this.unwatchProfileData = this.scope_.$watch(function() {
     return this['profileData'];
   }.bind(this), function(newVal, oldVal) {
     if (newVal !== undefined) {
@@ -241,7 +249,7 @@ const exports = function($scope, ngeoFeatureOverlayMgr, echocsvUrl,
       for (i = 0; i < len; i++) {
         var p = newVal[i];
         p = new olGeomPoint([p['x'], p['y']]);
-        p.transform('EPSG:2169', this['map'].getView().getProjection());
+        p.transform('EPSG:2169', this.map_ .getView().getProjection());
         lineString.appendCoordinate(
             p.getCoordinates().concat(newVal[i]['dist']));
       }
@@ -275,7 +283,7 @@ exports.prototype.createMeasureTooltip_ = function() {
     offset: [0, -15],
     positioning: 'bottom-center'
   });
-  this['map'].addOverlay(this.measureTooltip_);
+  this.map_ .addOverlay(this.measureTooltip_);
 };
 
 
@@ -340,7 +348,7 @@ exports.prototype.snapToGeometry_ = function(coordinate, geom) {
   // compute distance to line in pixels
   var dx = closestPoint[0] - coordinate[0];
   var dy = closestPoint[1] - coordinate[1];
-  var viewResolution = this['map'].getView().getResolution();
+  var viewResolution = this.map_ .getView().getResolution();
   var distSqr = dx * dx + dy * dy;
   var pixelDistSqr = distSqr / (viewResolution * viewResolution);
   // Check whether dist is lower than 8 pixels

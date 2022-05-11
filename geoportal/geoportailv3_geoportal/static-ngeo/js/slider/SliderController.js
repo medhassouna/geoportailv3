@@ -34,12 +34,6 @@ const exports = function($element, ngeoLocation, $document, $scope) {
   this.ngeoLocation_ = ngeoLocation;
 
   /**
-   * @type {ol.Map}
-   * @private
-   */
-  this.map_ = this['map'];
-
-  /**
    * @type {angular.JQLite}
    * @private
    */
@@ -80,6 +74,14 @@ const exports = function($element, ngeoLocation, $document, $scope) {
    * @private
    */
   this.mousedownEvent_ = null;
+};
+
+exports.prototype.$onInit = function () {
+  /**
+   * @type {ol.Map}
+   * @private
+   */
+  this.map_ = this['map'];
   this.scope_.$watch(function() {
     return this['active'];
   }.bind(this), function(show, oldShow) {

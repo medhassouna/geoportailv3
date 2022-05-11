@@ -25,8 +25,6 @@ import appModule from '../module.js';
  * @param {app.GetElevation} appGetElevation Elevation service.
  */
 const exports = function($http, ngeoDebounce, appGetElevation) {
-  var map = this['map'];
-
   /**
    * @type {app.GetElevation}
    * @private
@@ -38,8 +36,13 @@ const exports = function($http, ngeoDebounce, appGetElevation) {
    */
   this['elevation'] = '';
 
+  this.ngeoDebounce = ngeoDebounce;
+};
+
+exports.prototype.$onInit = function() {
+  var map = this['map'];
   // 2D
-  map.on('pointermove', ngeoDebounce((e) => {
+  map.on('pointermove', this.ngeoDebounce((e) => {
     if (!this['active'] || !e.coordinate) {
       return;
     }

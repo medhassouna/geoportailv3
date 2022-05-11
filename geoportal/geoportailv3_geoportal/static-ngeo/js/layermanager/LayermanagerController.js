@@ -45,8 +45,9 @@ class Controller {
      * @type {angular.$rootScope}
      */
     this.$rootScope = $rootScope;
+  };
+  $onInit() {
     this.layers3d = this.map.get('ol3dm');
-
   };
   is3dEnabled() {
     return this.map.get('ol3dm') && this.map.get('ol3dm').is3dEnabled();

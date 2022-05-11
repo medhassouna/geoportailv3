@@ -516,15 +516,6 @@ const exports = function($scope, $window, $compile,
     select: exports.selected_.bind(this)
   });
 
-  listen(this['map'].getLayers(),
-      olCollectionEventType.ADD,
-      /**
-       * @param {ol.Collection.Event} e Collection event.
-       */
-      (function(e) {
-        this.featureOverlay.clear();
-      }), this);
-
   this.facetsPanelOpen = false;
   this.initialFacets = {
     layers: true,
@@ -1001,6 +992,17 @@ exports.prototype.resetFacets = function() {
  */
 exports.prototype.saveSearch = function() {
   localStorage.setItem('searchFacets', JSON.stringify(this.facets))
+};
+
+exports.prototype.$onInit = function() {
+  listen(this['map'].getLayers(),
+      olCollectionEventType.ADD,
+      /**
+       * @param {ol.Collection.Event} e Collection event.
+       */
+      (function(e) {
+        this.featureOverlay.clear();
+      }), this);
 };
 
 appModule.controller('AppSearchController',
